@@ -724,6 +724,7 @@
         <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     </a>
 
+    <!-- Cart Drawer -->
     <div class="drawer-overlay" id="drawerOverlay"></div>
     <div class="cart-drawer" id="cartDrawer">
         <div class="drawer-header">
@@ -740,6 +741,7 @@
         </div>
     </div>
 
+    <!-- Checkout & Success Modal -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <div id="checkoutView">
@@ -784,6 +786,7 @@
         </div>
     </div>
 
+    <!-- Custom Confirmation Modal -->
     <div class="confirm-modal-overlay" id="confirmModalOverlay">
         <div class="confirm-modal">
             <div class="confirm-msg" id="confirmMsg">Are you sure?</div>
@@ -794,6 +797,7 @@
         </div>
     </div>
 
+    <!-- Buyer Order History Modal -->
     <div class="modal-overlay" id="ordersModalOverlay">
         <div class="modal">
             <div class="modal-header">
@@ -804,6 +808,7 @@
         </div>
     </div>
 
+    <!-- Admin Portal Modal -->
     <div class="modal-overlay" id="adminModalOverlay">
         <div class="modal">
             <div class="modal-header">
@@ -966,7 +971,7 @@
         try { cloudOrders = JSON.parse(localStorage.getItem('shopify_orders_local') || '[]'); } catch(e) {}
         function saveLocalOrders() { localStorage.setItem('shopify_orders_local', JSON.stringify(cloudOrders)); }
 
-        // ---- Firebase Initialization ----
+        // ---- Firebase Initialization (hardcoded config) ----
         (async () => {
             try {
                 const firebaseConfig = {
@@ -980,8 +985,8 @@
                     measurementId: "G-B28RCDZGZ8"
                 };
 
-                // Use the projectId to prevent document fragmentation
-                const appId = firebaseConfig.projectId;
+                // Use the Firebase appId as the Firestore path identifier
+                const appId = firebaseConfig.appId;
 
                 const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
                 const { getAuth, signInAnonymously, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
@@ -992,14 +997,7 @@
                 const db = getFirestore(app);
                 isOfflineMode = false;
 
-                // Explicit Error Catch for Authentication
-                try {
-                    await signInAnonymously(auth);
-                } catch (authErr) {
-                    console.error("Firebase Auth Error:", authErr);
-                    alert("⚠️ Firebase Connection Blocked!\n\nYou need to enable 'Anonymous' sign-in.\n1. Go to Firebase Console.\n2. Click Authentication -> Sign-in method.\n3. Turn 'Anonymous' to Enable.\n4. Save and refresh this page.");
-                    throw authErr;
-                }
+                await signInAnonymously(auth);
 
                 onAuthStateChanged(auth, user => {
                     currentUser = user;
@@ -1019,9 +1017,9 @@
                     onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'orders'), snap => {
                         cloudOrders = snap.docs.map(d => ({ fbId: d.id, ...d.data() }));
                         cloudOrders.sort((a, b) => b.timestamp - a.timestamp);
-                        if (document.getElementById('ordersModalOverlay')?.classList.contains('open')) renderOrders();
+                        if (document.getElementById('ordersModalOverlay').classList.contains('open')) renderOrders();
                         const ao = document.getElementById('adminOrdersList');
-                        if (document.getElementById('adminModalOverlay')?.classList.contains('open') && ao && ao.style.display !== 'none') renderAdminOrders();
+                        if (document.getElementById('adminModalOverlay').classList.contains('open') && ao && ao.style.display !== 'none') renderAdminOrders();
                     });
 
                     // Products real-time listener
@@ -1029,11 +1027,11 @@
                         dynamicProducts = snap.docs.map(d => ({ fbId: d.id, ...d.data() }));
                         buildFilters();
                         renderProducts();
-                        if (document.getElementById('adminListedProductsPanel')?.style.display !== 'none') renderListedProducts();
+                        if (document.getElementById('adminListedProductsPanel').style.display !== 'none') renderListedProducts();
                     });
                 });
             } catch (e) {
-                console.warn('Firebase running in offline mode:', e.message);
+                console.warn('Firebase not available, running in offline mode:', e.message);
                 isOfflineMode = true;
             }
         })();
@@ -1044,9 +1042,8 @@
         let resolveConfirm = null;
         function customConfirm(message) {
             return new Promise(resolve => {
-                const cm = document.getElementById('confirmMsg');
-                if(cm) cm.textContent = message;
-                document.getElementById('confirmModalOverlay')?.classList.add('open');
+                document.getElementById('confirmMsg').textContent = message;
+                document.getElementById('confirmModalOverlay').classList.add('open');
                 resolveConfirm = resolve;
             });
         }
@@ -1059,66 +1056,57 @@
         function buildFilters() {
             const PRODUCTS = getAllProducts();
             const cats = ['All', ...new Set(PRODUCTS.map(p => p.category))];
-            const fw = document.getElementById('filterWrap');
-            if(fw) {
-                fw.innerHTML = cats.map(c =>
-                    `<button class="filter-btn ${c === activeFilter ? 'active' : ''}">${c}</button>`
-                ).join('');
-                document.querySelectorAll('.filter-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        activeFilter = btn.textContent;
-                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        renderProducts();
-                    });
+            document.getElementById('filterWrap').innerHTML = cats.map(c =>
+                `<button class="filter-btn ${c === activeFilter ? 'active' : ''}">${c}</button>`
+            ).join('');
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    activeFilter = btn.textContent;
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderProducts();
                 });
-            }
+            });
         }
 
         function renderProducts() {
             const PRODUCTS = getAllProducts();
             const list = activeFilter === 'All' ? PRODUCTS : PRODUCTS.filter(p => p.category === activeFilter);
             const grid = document.getElementById('productGrid');
-            if(grid) {
-                grid.innerHTML = list.map((p, i) => `
-                    <div class="product-card ${p.outOfStock ? 'out-of-stock' : ''}" style="animation-delay:${i * 0.07}s">
-                        <div class="product-img-wrap">
-                            <img src="${p.image}" alt="${escHtml(p.name)}" loading="lazy">
-                            ${p.outOfStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
+            grid.innerHTML = list.map((p, i) => `
+                <div class="product-card ${p.outOfStock ? 'out-of-stock' : ''}" style="animation-delay:${i * 0.07}s">
+                    <div class="product-img-wrap">
+                        <img src="${p.image}" alt="${escHtml(p.name)}" loading="lazy">
+                        ${p.outOfStock ? '<span class="oos-badge">Out of Stock</span>' : ''}
+                    </div>
+                    <div class="product-info">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div class="product-category">${escHtml(p.category)}</div>
+                            <div class="product-id-tag">#${p.uid}</div>
                         </div>
-                        <div class="product-info">
-                            <div style="display:flex;justify-content:space-between;align-items:center;">
-                                <div class="product-category">${escHtml(p.category)}</div>
-                                <div class="product-id-tag">#${p.uid}</div>
-                            </div>
-                            <div class="product-name">${escHtml(p.name)}</div>
-                            ${p.description ? `<div class="product-desc">${escHtml(p.description)}</div>` : ''}
-                            <div class="product-footer">
-                                <div class="product-price">${fmt(p.price)}<span> /unit</span></div>
-                                ${p.outOfStock
-                                    ? `<button class="add-btn disabled" disabled>Out of Stock</button>`
-                                    : `<button class="add-btn" data-adduid="${p.uid}">+ Add</button>`
-                                }
-                            </div>
+                        <div class="product-name">${escHtml(p.name)}</div>
+                        ${p.description ? `<div class="product-desc">${escHtml(p.description)}</div>` : ''}
+                        <div class="product-footer">
+                            <div class="product-price">${fmt(p.price)}<span> /unit</span></div>
+                            ${p.outOfStock
+                                ? `<button class="add-btn disabled" disabled>Out of Stock</button>`
+                                : `<button class="add-btn" data-adduid="${p.uid}">+ Add</button>`
+                            }
                         </div>
-                    </div>`).join('');
-                document.querySelectorAll('[data-adduid]').forEach(btn => {
-                    btn.addEventListener('click', () => addToCart(btn.dataset.adduid));
-                });
-            }
+                    </div>
+                </div>`).join('');
+            document.querySelectorAll('[data-adduid]').forEach(btn => {
+                btn.addEventListener('click', () => addToCart(btn.dataset.adduid));
+            });
         }
 
         function updateCartUI() {
             const qty = getTotalQty();
             const el = document.getElementById('cartCount');
-            if(el) {
-                el.textContent = qty;
-                el.classList.toggle('show', qty > 0);
-            }
-            const gt = document.getElementById('grandTotal');
-            if(gt) gt.textContent = fmt(getTotal());
-            const cf = document.getElementById('cartFooter');
-            if(cf) cf.style.display = qty > 0 ? 'block' : 'none';
+            el.textContent = qty;
+            el.classList.toggle('show', qty > 0);
+            document.getElementById('grandTotal').textContent = fmt(getTotal());
+            document.getElementById('cartFooter').style.display = qty > 0 ? 'block' : 'none';
         }
 
         // ============================================================
@@ -1133,11 +1121,9 @@
             saveCart();
             updateCartUI();
             const btn = document.getElementById('cartHeaderBtn');
-            if(btn) {
-                btn.style.borderColor = 'var(--accent)';
-                btn.style.transform = 'scale(1.05)';
-                setTimeout(() => { btn.style.borderColor = ''; btn.style.transform = ''; }, 300);
-            }
+            btn.style.borderColor = 'var(--accent)';
+            btn.style.transform = 'scale(1.05)';
+            setTimeout(() => { btn.style.borderColor = ''; btn.style.transform = ''; }, 300);
         }
 
         function changeQty(uid, delta) {
@@ -1155,7 +1141,6 @@
 
         function renderCartDrawer() {
             const body = document.getElementById('cartBody');
-            if(!body) return;
             if (!cart.length) {
                 body.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>Your cart is empty.<br>Add some products!</p></div>`;
                 return;
@@ -1185,14 +1170,14 @@
 
         function openCart() {
             renderCartDrawer();
-            document.getElementById('cartDrawer')?.classList.add('open');
-            document.getElementById('drawerOverlay')?.classList.add('open');
+            document.getElementById('cartDrawer').classList.add('open');
+            document.getElementById('drawerOverlay').classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
         function closeCart() {
-            document.getElementById('cartDrawer')?.classList.remove('open');
-            document.getElementById('drawerOverlay')?.classList.remove('open');
+            document.getElementById('cartDrawer').classList.remove('open');
+            document.getElementById('drawerOverlay').classList.remove('open');
             document.body.style.overflow = '';
         }
 
@@ -1208,19 +1193,18 @@
                 summaryText += `${item.name} x${item.qty} - ${fmt(item.price * item.qty)}\n`;
             });
             summaryHTML += `<div class="order-line total"><span>Grand Total</span><span>${fmt(getTotal())}</span></div>`;
-            const os = document.getElementById('orderSummary'); if(os) os.innerHTML = summaryHTML;
-            const hos = document.getElementById('hiddenOrderSummary'); if(hos) hos.value = summaryText;
-            const ht = document.getElementById('hiddenTotal'); if(ht) ht.value = fmt(getTotal());
-            const es = document.getElementById('emailSubject'); if(es) es.value = `New Order - Shopify (${fmt(getTotal())})`;
-            
-            const cv = document.getElementById('checkoutView'); if(cv) cv.style.display = '';
-            const sv = document.getElementById('successView'); if(sv) sv.style.display = 'none';
-            document.getElementById('modalOverlay')?.classList.add('open');
+            document.getElementById('orderSummary').innerHTML = summaryHTML;
+            document.getElementById('hiddenOrderSummary').value = summaryText;
+            document.getElementById('hiddenTotal').value = fmt(getTotal());
+            document.getElementById('emailSubject').value = `New Order - Shopify (${fmt(getTotal())})`;
+            document.getElementById('checkoutView').style.display = '';
+            document.getElementById('successView').style.display = 'none';
+            document.getElementById('modalOverlay').classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
         function closeCheckout() {
-            document.getElementById('modalOverlay')?.classList.remove('open');
+            document.getElementById('modalOverlay').classList.remove('open');
             document.body.style.overflow = '';
         }
 
@@ -1234,12 +1218,11 @@
             return 'status-cancelled';
         }
 
-        function openOrders() { renderOrders(); document.getElementById('ordersModalOverlay')?.classList.add('open'); document.body.style.overflow = 'hidden'; }
-        function closeOrders() { document.getElementById('ordersModalOverlay')?.classList.remove('open'); document.body.style.overflow = ''; }
+        function openOrders() { renderOrders(); document.getElementById('ordersModalOverlay').classList.add('open'); document.body.style.overflow = 'hidden'; }
+        function closeOrders() { document.getElementById('ordersModalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
 
         function renderOrders() {
             const body = document.getElementById('ordersBody');
-            if(!body) return;
             const myOrders = isOfflineMode ? cloudOrders : cloudOrders.filter(o => o.creatorId === (currentUser ? currentUser.uid : null));
             if (!myOrders.length) {
                 body.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">📦</div><p>No past orders found.</p></div>`;
@@ -1274,7 +1257,7 @@
                 const ord = cloudOrders.find(o => o.orderId === orderId);
                 if (ord) ord.status = 'Cancelled';
                 saveLocalOrders(); renderOrders();
-                if (document.getElementById('adminModalOverlay')?.classList.contains('open')) renderAdminOrders();
+                if (document.getElementById('adminModalOverlay').classList.contains('open')) renderAdminOrders();
             } else {
                 try {
                     const { db, appId, updateDoc, doc } = window._fbHelpers;
@@ -1298,20 +1281,19 @@
             if (pass === null) return;
             if (pass === ADMIN_PASS) {
                 switchAdminTab('orders');
-                document.getElementById('adminModalOverlay')?.classList.add('open');
+                document.getElementById('adminModalOverlay').classList.add('open');
                 document.body.style.overflow = 'hidden';
             } else { alert('Incorrect passcode.'); }
         }
 
-        function closeAdmin() { document.getElementById('adminModalOverlay')?.classList.remove('open'); document.body.style.overflow = ''; }
+        function closeAdmin() { document.getElementById('adminModalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
 
         function switchAdminTab(tab) {
             const tabs = { orders: 'tabBtnOrders', addProduct: 'tabBtnAddProduct', listedProducts: 'tabBtnListedProducts', password: 'tabBtnPassword' };
             const panels = { orders: 'adminOrdersList', addProduct: 'adminAddProductPanel', listedProducts: 'adminListedProductsPanel', password: 'adminPasswordPanel' };
             Object.keys(tabs).forEach(t => {
-                document.getElementById(tabs[t])?.classList.toggle('active', t === tab);
-                const p = document.getElementById(panels[t]);
-                if(p) p.style.display = t === tab ? 'block' : 'none';
+                document.getElementById(tabs[t]).classList.toggle('active', t === tab);
+                document.getElementById(panels[t]).style.display = t === tab ? 'block' : 'none';
             });
             if (tab === 'orders') renderAdminOrders();
             if (tab === 'listedProducts') renderListedProducts();
@@ -1320,7 +1302,6 @@
 
         function renderAdminOrders() {
             const list = document.getElementById('adminOrdersList');
-            if(!list) return;
             if (!cloudOrders.length) {
                 list.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">📂</div><p>No orders in the database.</p></div>`;
                 return;
@@ -1375,7 +1356,11 @@
                 try {
                     const { db, appId, updateDoc, doc } = window._fbHelpers;
                     await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', fbId), { status: newStatus });
-                } catch (e) { alert('Failed to cancel. Check connection.'); return; }
+                    if (newStatus === 'Cancelled') selectEl.disabled = true;
+                } catch (e) {
+                    alert('Error updating database.');
+                    if (ord) selectEl.value = ord.status; return;
+                }
             }
             if (newStatus === 'Cancelled' && ord) {
                 try {
@@ -1389,10 +1374,10 @@
         }
 
         // ---- ADD PRODUCT ----
-        document.getElementById('addProductForm')?.addEventListener('submit', async function(e) {
+        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('addProductBtn');
-            if(btn) { btn.disabled = true; btn.textContent = 'Adding…'; }
+            btn.disabled = true; btn.textContent = 'Adding…';
             const newProd = {
                 uid: genUID(), name: this.name.value, price: parseFloat(this.price.value),
                 category: this.category.value, description: this.description.value || '',
@@ -1407,12 +1392,12 @@
                 }
                 this.reset(); alert('Product added successfully!');
             } catch(err) { alert('Failed to add product.'); }
-            if(btn) { btn.disabled = false; btn.textContent = '✦ Add Product to Store'; }
+            btn.disabled = false; btn.textContent = '✦ Add Product to Store';
         });
 
         // ---- LISTED PRODUCTS ----
         let lpSearchQuery = '';
-        document.getElementById('lpSearchInput')?.addEventListener('input', function() {
+        document.getElementById('lpSearchInput').addEventListener('input', function() {
             lpSearchQuery = this.value.trim().toLowerCase(); renderListedProducts();
         });
 
@@ -1421,8 +1406,6 @@
             const q = lpSearchQuery;
             const filtered = q ? PRODUCTS.filter(p => p.name.toLowerCase().includes(q) || p.uid.toLowerCase().includes(q)) : PRODUCTS;
             const container = document.getElementById('lpProductList');
-            if(!container) return;
-            
             if (!filtered.length) {
                 container.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🔍</div><p>No products found.</p></div>`;
                 return;
@@ -1459,8 +1442,8 @@
             container.querySelectorAll('[data-edituid]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const panel = document.getElementById(`lpedit-${btn.dataset.edituid}`);
-                    panel?.classList.toggle('open');
-                    btn.textContent = panel?.classList.contains('open') ? '✖ Cancel' : '✏️ Edit';
+                    panel.classList.toggle('open');
+                    btn.textContent = panel.classList.contains('open') ? '✖ Cancel' : '✏️ Edit';
                 });
             });
             container.querySelectorAll('[data-saveuid]').forEach(btn => { btn.addEventListener('click', () => saveProductEdit(btn.dataset.saveuid)); });
@@ -1469,11 +1452,11 @@
         }
 
         function saveProductEdit(uid) {
-            const name = document.getElementById(`lpen-${uid}`)?.value.trim();
-            const price = parseFloat(document.getElementById(`lpep-${uid}`)?.value);
-            const cat = document.getElementById(`lpec-${uid}`)?.value.trim();
-            const img = document.getElementById(`lpei-${uid}`)?.value.trim();
-            const desc = document.getElementById(`lped-${uid}`)?.value.trim();
+            const name = document.getElementById(`lpen-${uid}`).value.trim();
+            const price = parseFloat(document.getElementById(`lpep-${uid}`).value);
+            const cat = document.getElementById(`lpec-${uid}`).value.trim();
+            const img = document.getElementById(`lpei-${uid}`).value.trim();
+            const desc = document.getElementById(`lped-${uid}`).value.trim();
             if (!name || !img || isNaN(price) || !cat) { alert('Name, Price, Category and Image are required.'); return; }
             const defIdx = DEFAULT_PRODUCTS.findIndex(p => p.uid === uid);
             if (defIdx !== -1) {
@@ -1509,53 +1492,39 @@
 
         // ---- CHANGE PASSWORD ----
         function clearPwdFields() {
-            ['pwdCurrent','pwdNew','pwdConfirm'].forEach(id => { 
-                const el = document.getElementById(id);
-                if(el) el.value = ''; 
-            });
+            ['pwdCurrent','pwdNew','pwdConfirm'].forEach(id => { document.getElementById(id).value = ''; });
             const msg = document.getElementById('pwdMsg');
-            if(msg) { msg.className = 'pwd-msg'; msg.textContent = ''; }
+            msg.className = 'pwd-msg'; msg.textContent = '';
         }
 
-        document.getElementById('changePwdBtn')?.addEventListener('click', async () => {
-            const cur = document.getElementById('pwdCurrent')?.value;
-            const nw = document.getElementById('pwdNew')?.value.trim();
-            const conf = document.getElementById('pwdConfirm')?.value.trim();
+        document.getElementById('changePwdBtn').addEventListener('click', async () => {
+            const cur = document.getElementById('pwdCurrent').value;
+            const nw = document.getElementById('pwdNew').value.trim();
+            const conf = document.getElementById('pwdConfirm').value.trim();
             const msg = document.getElementById('pwdMsg');
-            if (cur !== ADMIN_PASS) { if(msg) { msg.className = 'pwd-msg error'; msg.textContent = 'Current password is incorrect.'; } return; }
-            if (!nw) { if(msg) { msg.className = 'pwd-msg error'; msg.textContent = 'New password cannot be empty.'; } return; }
-            if (nw !== conf) { if(msg) { msg.className = 'pwd-msg error'; msg.textContent = 'New passwords do not match.'; } return; }
-            
+            if (cur !== ADMIN_PASS) { msg.className = 'pwd-msg error'; msg.textContent = 'Current password is incorrect.'; return; }
+            if (!nw) { msg.className = 'pwd-msg error'; msg.textContent = 'New password cannot be empty.'; return; }
+            if (nw !== conf) { msg.className = 'pwd-msg error'; msg.textContent = 'New passwords do not match.'; return; }
             ADMIN_PASS = nw;
             localStorage.setItem('shopify_admin_pass', nw);
-            
             if (!isOfflineMode && window._fbHelpers) {
                 try {
                     const { db, appId, doc, setDoc } = window._fbHelpers;
                     const adminDocPath = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'adminSettings');
                     await setDoc(adminDocPath, { password: nw }, { merge: true });
-                    console.log("Password successfully synced to Firebase Cloud.");
-                } catch (error) { 
-                    console.error("Firebase write error:", error); 
-                    alert("⚠️ Cloud sync failed!\nMake sure your Firestore Rules are set to:\nallow read, write: if true;");
-                }
-            } else {
-                alert("⚠️ App is running in offline mode. Password only saved locally on this device.");
+                } catch (error) { console.error("Couldn't save password to the cloud:", error); }
             }
-            
-            if(msg) { msg.className = 'pwd-msg success'; msg.textContent = '✓ Password updated successfully!'; }
-            const pc = document.getElementById('pwdCurrent'); if(pc) pc.value = '';
-            const pn = document.getElementById('pwdNew'); if(pn) pn.value = '';
-            const pcf = document.getElementById('pwdConfirm'); if(pcf) pcf.value = '';
+            msg.className = 'pwd-msg success'; msg.textContent = '✓ Password updated successfully!';
+            document.getElementById('pwdNew').value = ''; document.getElementById('pwdConfirm').value = ''; document.getElementById('pwdCurrent').value = '';
         });
 
         // ============================================================
         // ORDER FORM SUBMIT
         // ============================================================
-        document.getElementById('orderForm')?.addEventListener('submit', async function(e) {
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            if(btn) { btn.disabled = true; btn.textContent = 'Placing order…'; }
+            btn.disabled = true; btn.textContent = 'Placing order…';
             const formData = new FormData(this);
             const newOrder = {
                 orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
@@ -1576,39 +1545,51 @@
                     await fetch('https://formspree.io/f/xeeplold', { method: 'POST', body: formData, headers: { Accept: 'application/json' } });
                 } catch(fe) {}
                 cart = []; saveCart(); updateCartUI(); renderProducts();
-                const cv = document.getElementById('checkoutView'); if(cv) cv.style.display = 'none';
-                const sv = document.getElementById('successView'); if(sv) sv.style.display = 'block';
+                document.getElementById('checkoutView').style.display = 'none';
+                document.getElementById('successView').style.display = 'block';
             } catch(err) { alert('Network error. Please try again or WhatsApp us directly.'); }
-            if(btn) { btn.disabled = false; btn.textContent = '✦ Confirm Order'; }
+            btn.disabled = false; btn.textContent = '✦ Confirm Order';
         });
+
+        // ============================================================
+        // HELPERS
+        // ============================================================
+        function escHtml(s) {
+            if (!s) return '';
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+        function escAttr(s) {
+            if (!s) return '';
+            return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+        }
 
         // ============================================================
         // EVENT WIRING
         // ============================================================
-        document.getElementById('ordersHeaderBtn')?.addEventListener('click', openOrders);
-        document.getElementById('cartHeaderBtn')?.addEventListener('click', openCart);
-        document.getElementById('closeCartBtn')?.addEventListener('click', closeCart);
-        document.getElementById('closeCheckoutBtn')?.addEventListener('click', closeCheckout);
-        document.getElementById('closeOrdersBtn')?.addEventListener('click', closeOrders);
-        document.getElementById('closeAdminBtn')?.addEventListener('click', closeAdmin);
-        document.getElementById('checkoutBtn')?.addEventListener('click', openCheckout);
-        document.getElementById('adminPortalLink')?.addEventListener('click', openAdmin);
-        document.getElementById('drawerOverlay')?.addEventListener('click', closeCart);
-        document.getElementById('modalOverlay')?.addEventListener('click', e => { if (e.target === document.getElementById('modalOverlay')) closeCheckout(); });
-        document.getElementById('ordersModalOverlay')?.addEventListener('click', e => { if (e.target === document.getElementById('ordersModalOverlay')) closeOrders(); });
-        document.getElementById('adminModalOverlay')?.addEventListener('click', e => { if (e.target === document.getElementById('adminModalOverlay')) closeAdmin(); });
-        document.getElementById('confirmYesBtn')?.addEventListener('click', () => {
-            document.getElementById('confirmModalOverlay')?.classList.remove('open');
+        document.getElementById('ordersHeaderBtn').addEventListener('click', openOrders);
+        document.getElementById('cartHeaderBtn').addEventListener('click', openCart);
+        document.getElementById('closeCartBtn').addEventListener('click', closeCart);
+        document.getElementById('closeCheckoutBtn').addEventListener('click', closeCheckout);
+        document.getElementById('closeOrdersBtn').addEventListener('click', closeOrders);
+        document.getElementById('closeAdminBtn').addEventListener('click', closeAdmin);
+        document.getElementById('checkoutBtn').addEventListener('click', openCheckout);
+        document.getElementById('adminPortalLink').addEventListener('click', openAdmin);
+        document.getElementById('drawerOverlay').addEventListener('click', closeCart);
+        document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target === document.getElementById('modalOverlay')) closeCheckout(); });
+        document.getElementById('ordersModalOverlay').addEventListener('click', e => { if (e.target === document.getElementById('ordersModalOverlay')) closeOrders(); });
+        document.getElementById('adminModalOverlay').addEventListener('click', e => { if (e.target === document.getElementById('adminModalOverlay')) closeAdmin(); });
+        document.getElementById('confirmYesBtn').addEventListener('click', () => {
+            document.getElementById('confirmModalOverlay').classList.remove('open');
             if (resolveConfirm) resolveConfirm(true);
         });
-        document.getElementById('confirmNoBtn')?.addEventListener('click', () => {
-            document.getElementById('confirmModalOverlay')?.classList.remove('open');
+        document.getElementById('confirmNoBtn').addEventListener('click', () => {
+            document.getElementById('confirmModalOverlay').classList.remove('open');
             if (resolveConfirm) resolveConfirm(false);
         });
-        document.getElementById('tabBtnOrders')?.addEventListener('click', () => switchAdminTab('orders'));
-        document.getElementById('tabBtnAddProduct')?.addEventListener('click', () => switchAdminTab('addProduct'));
-        document.getElementById('tabBtnListedProducts')?.addEventListener('click', () => switchAdminTab('listedProducts'));
-        document.getElementById('tabBtnPassword')?.addEventListener('click', () => switchAdminTab('password'));
+        document.getElementById('tabBtnOrders').addEventListener('click', () => switchAdminTab('orders'));
+        document.getElementById('tabBtnAddProduct').addEventListener('click', () => switchAdminTab('addProduct'));
+        document.getElementById('tabBtnListedProducts').addEventListener('click', () => switchAdminTab('listedProducts'));
+        document.getElementById('tabBtnPassword').addEventListener('click', () => switchAdminTab('password'));
 
         // ============================================================
         // INIT
