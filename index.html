@@ -864,7 +864,7 @@
 
     <section class="hero">
         <h1 class="hero-title">Shop <span class="highlight">Smarter.</span><br>Live Better.</h1>
-        <p class="hero-sub">Gadgets &amp; accessories — handpicked for you.<br>Order online, we'll confirm on WhatsApp.</p>
+        <p class="hero-sub">Gadgets & accessories — handpicked for you.<br>Order online, we'll confirm on WhatsApp.</p>
         <div class="location-badge">📍 Koramangala, Bangalore</div>
     </section>
 
@@ -1582,10 +1582,25 @@
             if(gateSetupView) gateSetupView.style.display = 'none';
             if(gateLoginView) gateLoginView.style.display = 'none';
 
+            // Wait briefly for Firebase Auth to connect
             let waited = 0;
             while (isOfflineMode === true && waited < 20) {
                 await new Promise(r => setTimeout(r, 100));
                 waited++;
+            }
+
+            // NEW: Force check the cloud to see if a password exists before defaulting to setup
+            if (!isOfflineMode && _fbHelpers) {
+                try {
+                    const { db, APP_ID, doc, getDoc } = _fbHelpers;
+                    const adminDoc = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config', 'adminSettings'));
+                    if (adminDoc.exists() && adminDoc.data().password) {
+                        ADMIN_PASS = adminDoc.data().password;
+                        localStorage.setItem('shopify_admin_pass', ADMIN_PASS);
+                    }
+                } catch(e) {
+                    console.warn("Could not fetch cloud settings", e);
+                }
             }
 
             const cachedPass = localStorage.getItem('shopify_admin_pass');
