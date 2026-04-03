@@ -729,7 +729,7 @@
     </div>
 
     <a class="wa-float" href="https://wa.me/919068582274" target="_blank" aria-label="WhatsApp">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Chat on WhatsApp
     </a>
 
     <!-- Cart Drawer -->
@@ -905,19 +905,32 @@
 
     <script>
         // ============================================================
-        // SHOPIFY — MAIN SCRIPT (plain <script>, no type="module")
-        // Works in VS Code live server AND in Firebase/Canvas env.
+        // 🚀🚀 YOUR FIREBASE CONFIGURATION GOES HERE 🚀🚀
+        // ============================================================
+        // To make passwords, products, and orders sync across ALL devices on GitHub Pages,
+        // you MUST replace the word 'null' below with your Firebase config object.
+        // Copy the config from your Firebase console, it looks like the commented out example.
+        
+        const MY_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyAgyOQaVB-F2zXgESa2jH3bfJpwmITjUdk",
+            authDomain: "shopify-bf97c.firebaseapp.com",
+            databaseURL: "https://shopify-bf97c-default-rtdb.firebaseio.com",
+            projectId: "shopify-bf97c",
+            storageBucket: "shopify-bf97c.firebasestorage.app",
+            messagingSenderId: "318119676871",
+            appId: "1:318119676871:web:82beae07bb607606ea67e2",
+            measurementId: "G-B28RCDZGZ8"
+        };
+        
         // ============================================================
 
         // ---- Unique ID generator ----
         function getAllExistingUIDs() {
             const ids = new Set();
-            // Default UIDs from localStorage map
             try {
                 const map = JSON.parse(localStorage.getItem('shopify_default_uids') || '{}');
                 Object.values(map).forEach(v => ids.add(v));
             } catch(e) {}
-            // Dynamic product UIDs
             try {
                 const dyn = JSON.parse(localStorage.getItem('shopify_products_local') || '[]');
                 dyn.forEach(p => { if (p.uid) ids.add(p.uid); });
@@ -932,31 +945,24 @@
             do {
                 const l1 = LETTERS[Math.floor(Math.random() * 26)];
                 const l2 = LETTERS[Math.floor(Math.random() * 26)];
-                const nums = String(Math.floor(10000 + Math.random() * 90000)); // always 5 digits
+                const nums = String(Math.floor(10000 + Math.random() * 90000));
                 uid = l1 + l2 + nums;
             } while (existing.has(uid));
             return uid;
         }
 
-        // ---- Default Products (with stable unique IDs stored in localStorage) ----
+        // ---- Default Products ----
         const RAW_DEFAULT = [
             { _key: 'default-1', name: "Apple iPhone 17 Pro Max (Deep Blue, 512 GB)", price: 130000, category: "Smartphones", image: "https://i.ibb.co/xqjdTK2h/iphone.webp" },
             { _key: 'default-2', name: "boAt 10000 mAh 22.5W Compact Power Bank (Martian Red)",price: 7000, category: "Accessories", image: "https://i.ibb.co/cchBJG1q/boat-powerbank.webp" },
             { _key: 'default-3', name: "pTron Flick M1 Ambidextrous Optical Wireless Mouse (Black)", price: 400, category: "Accessories", image: "https://i.ibb.co/d0SCvX13/Ptron-Mouse.webp" }
         ];
 
-        // Assign persistent UIDs to default products (stored so they remain stable)
-        // Reset any old-format UIDs (PROD-xxx) to new format (2 letters + 5 digits)
         let defaultUIDMap = {};
-        try {
-            defaultUIDMap = JSON.parse(localStorage.getItem('shopify_default_uids') || '{}');
-        } catch(e) {}
+        try { defaultUIDMap = JSON.parse(localStorage.getItem('shopify_default_uids') || '{}'); } catch(e) {}
 
-        // If any stored UID uses the old PROD- format, wipe the map so they regenerate
         const hasOldFormat = Object.values(defaultUIDMap).some(v => String(v).startsWith('PROD-'));
-        if (hasOldFormat) {
-            defaultUIDMap = {};
-        }
+        if (hasOldFormat) defaultUIDMap = {};
 
         RAW_DEFAULT.forEach(p => {
             if (!defaultUIDMap[p._key]) defaultUIDMap[p._key] = genUID();
@@ -970,13 +976,10 @@
             ...p
         }));
 
-        // ---- Load local dynamic products ----
+        // ---- Local storage fallback state ----
         let dynamicProducts = [];
-        try {
-            dynamicProducts = JSON.parse(localStorage.getItem('shopify_products_local') || '[]');
-        } catch(e) {}
+        try { dynamicProducts = JSON.parse(localStorage.getItem('shopify_products_local') || '[]'); } catch(e) {}
 
-        // Migrate any dynamic products that still have old PROD-xxx format UIDs
         let dynMigrated = false;
         dynamicProducts.forEach(p => {
             if (!p.uid || String(p.uid).startsWith('PROD-')) {
@@ -986,23 +989,19 @@
         });
         if (dynMigrated) localStorage.setItem('shopify_products_local', JSON.stringify(dynamicProducts));
 
-        // ---- Out-of-stock overrides (stored separately so defaults can be updated too) ----
         let oosMap = {};
-        try {
-            oosMap = JSON.parse(localStorage.getItem('shopify_oos_map') || '{}');
-        } catch(e) {}
+        try { oosMap = JSON.parse(localStorage.getItem('shopify_oos_map') || '{}'); } catch(e) {}
 
-        function saveOOSMap() {
-            localStorage.setItem('shopify_oos_map', JSON.stringify(oosMap));
-        }
-
-        function saveDynamic() {
-            localStorage.setItem('shopify_products_local', JSON.stringify(dynamicProducts));
-        }
+        function saveOOSMap() { localStorage.setItem('shopify_oos_map', JSON.stringify(oosMap)); }
+        function saveDynamic() { localStorage.setItem('shopify_products_local', JSON.stringify(dynamicProducts)); }
 
         function getAllProducts() {
+            // Check if any default products were edited and saved as dynamic overrides globally
+            const dynamicUids = new Set(dynamicProducts.map(p => p.uid));
+            const activeDefaults = DEFAULT_PRODUCTS.filter(p => !dynamicUids.has(p.uid));
+
             const all = [
-                ...DEFAULT_PRODUCTS.map(p => ({ ...p, outOfStock: oosMap[p.uid] === true })),
+                ...activeDefaults.map(p => ({ ...p, outOfStock: oosMap[p.uid] === true })),
                 ...dynamicProducts.map(p => ({ ...p, outOfStock: oosMap[p.uid] === true }))
             ];
             return all;
@@ -1013,57 +1012,47 @@
 
         // ---- Cart ----
         let cart = [];
-        try {
-            cart = JSON.parse(localStorage.getItem('shopify_cart') || '[]');
-        } catch(e) {}
+        try { cart = JSON.parse(localStorage.getItem('shopify_cart') || '[]'); } catch(e) {}
 
-        function saveCart() {
-            localStorage.setItem('shopify_cart', JSON.stringify(cart));
-        }
-
-        function getCartItem(uid) {
-            return cart.find(i => i.uid === uid);
-        }
-
-        function fmt(n) {
-            return '₹' + Number(n).toLocaleString('en-IN');
-        }
-
-        function getTotal() {
-            return cart.reduce((s, i) => s + i.price * i.qty, 0);
-        }
-
-        function getTotalQty() {
-            return cart.reduce((s, i) => s + i.qty, 0);
-        }
+        function saveCart() { localStorage.setItem('shopify_cart', JSON.stringify(cart)); }
+        function getCartItem(uid) { return cart.find(i => i.uid === uid); }
+        function fmt(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+        function getTotal() { return cart.reduce((s, i) => s + i.price * i.qty, 0); }
+        function getTotalQty() { return cart.reduce((s, i) => s + i.qty, 0); }
 
         // ---- Cloud / Offline orders ----
         let cloudOrders = [];
         let isOfflineMode = true;
         let currentUser = { uid: 'local-user' };
-        try {
-            cloudOrders = JSON.parse(localStorage.getItem('shopify_orders_local') || '[]');
-        } catch(e) {}
+        try { cloudOrders = JSON.parse(localStorage.getItem('shopify_orders_local') || '[]'); } catch(e) {}
 
-        function saveLocalOrders() {
-            localStorage.setItem('shopify_orders_local', JSON.stringify(cloudOrders));
-        }
+        function saveLocalOrders() { localStorage.setItem('shopify_orders_local', JSON.stringify(cloudOrders)); }
 
-        // ---- Try Firebase (optional) ----
+        // ---- FIREBASE INIT ----
         (async () => {
             try {
-                const fbConfig = (typeof __firebase_config !== 'undefined' && __firebase_config) ? __firebase_config : null;
-                if (!fbConfig || fbConfig.trim() === '') throw new Error('no config');
+                let fbConfigStr = (typeof __firebase_config !== 'undefined' && __firebase_config) ? __firebase_config : null;
+                
+                // Use user's manual config if testing on GitHub pages!
+                if (!fbConfigStr && MY_FIREBASE_CONFIG) {
+                    fbConfigStr = JSON.stringify(MY_FIREBASE_CONFIG);
+                }
+
+                if (!fbConfigStr || fbConfigStr.trim() === '' || fbConfigStr === 'null') {
+                    throw new Error('No config provided. Switching to offline mode.');
+                }
 
                 const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
                 const { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
-                // ADDED setDoc HERE (STEP 1)
                 const { getFirestore, collection, addDoc, updateDoc, doc, onSnapshot, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
 
-                const appId = (typeof __app_id !== 'undefined') ? __app_id : 'default-app-id';
-                const app = initializeApp(JSON.parse(fbConfig));
+                const fbConfigObj = JSON.parse(fbConfigStr);
+                const app = initializeApp(fbConfigObj);
                 const auth = getAuth(app);
                 const db = getFirestore(app);
+                
+                // Fallback App ID extraction
+                const appId = (typeof __app_id !== 'undefined') ? __app_id : (fbConfigObj.projectId || 'default-app-id');
                 isOfflineMode = false;
 
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -1076,36 +1065,46 @@
                     currentUser = user;
                     if (!user) return;
 
-                    // Listen for the cloud password! (STEP 3)
+                    window._fbHelpers = { db, appId, addDoc, updateDoc, doc, collection, setDoc };
+
+                    // 1. Password listener (Global Sync)
                     onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'adminSettings'), snap => {
                         if (snap.exists() && snap.data().password) {
-                            ADMIN_PASS = snap.data().password; // Replace the local password with the cloud password!
-                            localStorage.setItem('shopify_admin_pass', ADMIN_PASS); // Keep local in sync
+                            ADMIN_PASS = snap.data().password;
+                            localStorage.setItem('shopify_admin_pass', ADMIN_PASS);
                         }
                     });
 
-                    // ADDED setDoc TO THIS EXPORT (STEP 2)
-                    window._fbHelpers = { db, appId, addDoc, updateDoc, doc, collection, setDoc };
+                    // 2. Out of Stock listener (Global Sync)
+                    onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'productStates'), snap => {
+                        if (snap.exists() && snap.data().oosMap) {
+                            oosMap = snap.data().oosMap;
+                            saveOOSMap();
+                            buildFilters();
+                            renderProducts();
+                            if (document.getElementById('adminListedProductsPanel')?.style.display !== 'none') renderListedProducts();
+                        }
+                    });
 
-                    // Orders listener
+                    // 3. Orders listener (Global Sync)
                     onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'orders'), snap => {
                         cloudOrders = snap.docs.map(d => ({ fbId: d.id, ...d.data() }));
                         cloudOrders.sort((a, b) => b.timestamp - a.timestamp);
-                        if (document.getElementById('ordersModalOverlay').classList.contains('open')) renderOrders();
+                        if (document.getElementById('ordersModalOverlay')?.classList.contains('open')) renderOrders();
                         const ao = document.getElementById('adminOrdersList');
-                        if (document.getElementById('adminModalOverlay').classList.contains('open') && ao && ao.style.display !== 'none') renderAdminOrders();
+                        if (document.getElementById('adminModalOverlay')?.classList.contains('open') && ao && ao.style.display !== 'none') renderAdminOrders();
                     });
 
-                    // Products listener
+                    // 4. Products listener (Global Sync)
                     onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'products'), snap => {
                         dynamicProducts = snap.docs.map(d => ({ fbId: d.id, ...d.data() }));
                         buildFilters();
                         renderProducts();
-                        if (document.getElementById('adminListedProductsPanel').style.display !== 'none') renderListedProducts();
+                        if (document.getElementById('adminListedProductsPanel')?.style.display !== 'none') renderListedProducts();
                     });
                 });
             } catch (e) {
-                console.warn('Firebase not available, running in offline mode:', e.message);
+                console.warn(e.message);
                 isOfflineMode = true;
             }
         })();
@@ -1147,6 +1146,8 @@
             const PRODUCTS = getAllProducts();
             const list = activeFilter === 'All' ? PRODUCTS : PRODUCTS.filter(p => p.category === activeFilter);
             const grid = document.getElementById('productGrid');
+            if(!grid) return;
+            
             grid.innerHTML = list.map((p, i) => `
                 <div class="product-card ${p.outOfStock ? 'out-of-stock' : ''}" style="animation-delay:${i * 0.07}s">
                     <div class="product-img-wrap">
@@ -1179,10 +1180,15 @@
         function updateCartUI() {
             const qty = getTotalQty();
             const el = document.getElementById('cartCount');
-            el.textContent = qty;
-            el.classList.toggle('show', qty > 0);
-            document.getElementById('grandTotal').textContent = fmt(getTotal());
-            document.getElementById('cartFooter').style.display = qty > 0 ? 'block' : 'none';
+            if (el) {
+                el.textContent = qty;
+                el.classList.toggle('show', qty > 0);
+            }
+            const gt = document.getElementById('grandTotal');
+            if(gt) gt.textContent = fmt(getTotal());
+            
+            const cf = document.getElementById('cartFooter');
+            if(cf) cf.style.display = qty > 0 ? 'block' : 'none';
         }
 
         // ============================================================
@@ -1202,12 +1208,14 @@
             updateCartUI();
 
             const btn = document.getElementById('cartHeaderBtn');
-            btn.style.borderColor = 'var(--accent)';
-            btn.style.transform = 'scale(1.05)';
-            setTimeout(() => {
-                btn.style.borderColor = '';
-                btn.style.transform = '';
-            }, 300);
+            if (btn) {
+                btn.style.borderColor = 'var(--accent)';
+                btn.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    btn.style.borderColor = '';
+                    btn.style.transform = '';
+                }, 300);
+            }
         }
 
         function changeQty(uid, delta) {
@@ -1229,6 +1237,8 @@
 
         function renderCartDrawer() {
             const body = document.getElementById('cartBody');
+            if (!body) return;
+            
             if (!cart.length) {
                 body.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>Your cart is empty.<br>Add some products!</p></div>`;
                 return;
@@ -1259,14 +1269,14 @@
 
         function openCart() {
             renderCartDrawer();
-            document.getElementById('cartDrawer').classList.add('open');
-            document.getElementById('drawerOverlay').classList.add('open');
+            document.getElementById('cartDrawer')?.classList.add('open');
+            document.getElementById('drawerOverlay')?.classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
         function closeCart() {
-            document.getElementById('cartDrawer').classList.remove('open');
-            document.getElementById('drawerOverlay').classList.remove('open');
+            document.getElementById('cartDrawer')?.classList.remove('open');
+            document.getElementById('drawerOverlay')?.classList.remove('open');
             document.body.style.overflow = '';
         }
 
@@ -1283,19 +1293,30 @@
             });
             summaryHTML += `<div class="order-line total"><span>Grand Total</span><span>${fmt(getTotal())}</span></div>`;
             
-            document.getElementById('orderSummary').innerHTML = summaryHTML;
-            document.getElementById('hiddenOrderSummary').value = summaryText;
-            document.getElementById('hiddenTotal').value = fmt(getTotal());
-            document.getElementById('emailSubject').value = `New Order - Shopify (${fmt(getTotal())})`;
+            const os = document.getElementById('orderSummary');
+            if (os) os.innerHTML = summaryHTML;
             
-            document.getElementById('checkoutView').style.display = '';
-            document.getElementById('successView').style.display = 'none';
-            document.getElementById('modalOverlay').classList.add('open');
+            const hos = document.getElementById('hiddenOrderSummary');
+            if (hos) hos.value = summaryText;
+            
+            const ht = document.getElementById('hiddenTotal');
+            if(ht) ht.value = fmt(getTotal());
+            
+            const es = document.getElementById('emailSubject');
+            if(es) es.value = `New Order - Shopify (${fmt(getTotal())})`;
+            
+            const cv = document.getElementById('checkoutView');
+            if(cv) cv.style.display = '';
+            
+            const sv = document.getElementById('successView');
+            if(sv) sv.style.display = 'none';
+            
+            document.getElementById('modalOverlay')?.classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
         function closeCheckout() {
-            document.getElementById('modalOverlay').classList.remove('open');
+            document.getElementById('modalOverlay')?.classList.remove('open');
             document.body.style.overflow = '';
         }
 
@@ -1311,17 +1332,19 @@
 
         function openOrders() {
             renderOrders();
-            document.getElementById('ordersModalOverlay').classList.add('open');
+            document.getElementById('ordersModalOverlay')?.classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
         function closeOrders() {
-            document.getElementById('ordersModalOverlay').classList.remove('open');
+            document.getElementById('ordersModalOverlay')?.classList.remove('open');
             document.body.style.overflow = '';
         }
 
         function renderOrders() {
             const body = document.getElementById('ordersBody');
+            if(!body) return;
+            // Offline mode shows all local orders. If online, it filters by the user.
             const myOrders = isOfflineMode ? cloudOrders : cloudOrders.filter(o => o.creatorId === (currentUser ? currentUser.uid : null));
             
             if (!myOrders.length) {
@@ -1360,7 +1383,7 @@
                 if (ord) ord.status = 'Cancelled';
                 saveLocalOrders();
                 renderOrders();
-                if (document.getElementById('adminModalOverlay').classList.contains('open')) renderAdminOrders();
+                if (document.getElementById('adminModalOverlay')?.classList.contains('open')) renderAdminOrders();
             } else {
                 try {
                     const { db, appId, updateDoc, doc } = window._fbHelpers;
@@ -1391,7 +1414,7 @@
 
             if (pass === ADMIN_PASS) {
                 switchAdminTab('orders');
-                document.getElementById('adminModalOverlay').classList.add('open');
+                document.getElementById('adminModalOverlay')?.classList.add('open');
                 document.body.style.overflow = 'hidden';
             } else {
                 alert('Incorrect passcode.');
@@ -1399,7 +1422,7 @@
         }
 
         function closeAdmin() {
-            document.getElementById('adminModalOverlay').classList.remove('open');
+            document.getElementById('adminModalOverlay')?.classList.remove('open');
             document.body.style.overflow = '';
         }
 
@@ -1408,8 +1431,9 @@
             const panels = { orders: 'adminOrdersList', addProduct: 'adminAddProductPanel', listedProducts: 'adminListedProductsPanel', password: 'adminPasswordPanel' };
 
             Object.keys(tabs).forEach(t => {
-                document.getElementById(tabs[t]).classList.toggle('active', t === tab);
-                document.getElementById(panels[t]).style.display = t === tab ? 'block' : 'none';
+                document.getElementById(tabs[t])?.classList.toggle('active', t === tab);
+                const panel = document.getElementById(panels[t]);
+                if(panel) panel.style.display = t === tab ? 'block' : 'none';
             });
 
             if (tab === 'orders') renderAdminOrders();
@@ -1419,11 +1443,14 @@
 
         function renderAdminOrders() {
             const list = document.getElementById('adminOrdersList');
+            if(!list) return;
+            
             if (!cloudOrders.length) {
                 list.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">📂</div><p>No orders in the database.</p></div>`;
                 return;
             }
 
+            // Admins view all orders directly from the global array!
             list.innerHTML = cloudOrders.map(order => {
                 const itemsHtml = order.items.map(i => `• ${escHtml(i.name)} (x${i.qty})`).join('<br>');
                 const isCancelled = order.status === 'Cancelled';
@@ -1503,11 +1530,13 @@
         }
 
         // ---- ADD PRODUCT ----
-        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+        document.getElementById('addProductForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('addProductBtn');
-            btn.disabled = true;
-            btn.textContent = 'Adding…';
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Adding…';
+            }
 
             const newProd = {
                 uid: genUID(),
@@ -1536,13 +1565,15 @@
                 alert('Failed to add product.');
             }
             
-            btn.disabled = false;
-            btn.textContent = '✦ Add Product to Store';
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = '✦ Add Product to Store';
+            }
         });
 
         // ---- LISTED PRODUCTS ----
         let lpSearchQuery = '';
-        document.getElementById('lpSearchInput').addEventListener('input', function() {
+        document.getElementById('lpSearchInput')?.addEventListener('input', function() {
             lpSearchQuery = this.value.trim().toLowerCase();
             renderListedProducts();
         });
@@ -1553,6 +1584,8 @@
             const filtered = q ? PRODUCTS.filter(p => p.name.toLowerCase().includes(q) || p.uid.toLowerCase().includes(q)) : PRODUCTS;
             
             const container = document.getElementById('lpProductList');
+            if(!container) return;
+            
             if (!filtered.length) {
                 container.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🔍</div><p>No products found.</p></div>`;
                 return;
@@ -1610,8 +1643,8 @@
             container.querySelectorAll('[data-edituid]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const panel = document.getElementById(`lpedit-${btn.dataset.edituid}`);
-                    panel.classList.toggle('open');
-                    btn.textContent = panel.classList.contains('open') ? '✖ Cancel' : '✏️ Edit';
+                    panel?.classList.toggle('open');
+                    btn.textContent = panel?.classList.contains('open') ? '✖ Cancel' : '✏️ Edit';
                 });
             });
 
@@ -1631,32 +1664,45 @@
             });
         }
 
-        function saveProductEdit(uid) {
-            const name = document.getElementById(`lpen-${uid}`).value.trim();
-            const price = parseFloat(document.getElementById(`lpep-${uid}`).value);
-            const cat = document.getElementById(`lpec-${uid}`).value.trim();
-            const img = document.getElementById(`lpei-${uid}`).value.trim();
-            const desc = document.getElementById(`lped-${uid}`).value.trim();
+        async function saveProductEdit(uid) {
+            const name = document.getElementById(`lpen-${uid}`)?.value.trim();
+            const price = parseFloat(document.getElementById(`lpep-${uid}`)?.value);
+            const cat = document.getElementById(`lpec-${uid}`)?.value.trim();
+            const img = document.getElementById(`lpei-${uid}`)?.value.trim();
+            const desc = document.getElementById(`lped-${uid}`)?.value.trim();
 
             if (!name || !img || isNaN(price) || !cat) {
                 alert('Name, Price, Category and Image are required.');
                 return;
             }
 
-            // Check if it's a default product — update DEFAULT_PRODUCTS array in memory
-            const defIdx = DEFAULT_PRODUCTS.findIndex(p => p.uid === uid);
-            if (defIdx !== -1) {
-                DEFAULT_PRODUCTS[defIdx].name = name;
-                DEFAULT_PRODUCTS[defIdx].price = price;
-                DEFAULT_PRODUCTS[defIdx].category = cat;
-                DEFAULT_PRODUCTS[defIdx].image = img;
-                DEFAULT_PRODUCTS[defIdx].description = desc;
+            const prodData = { uid, name, price, category: cat, image: img, description: desc, timestamp: Date.now() };
+
+            if (!isOfflineMode && window._fbHelpers) {
+                const { db, appId, addDoc, collection, updateDoc, doc } = window._fbHelpers;
+                const existingDyn = dynamicProducts.find(p => p.uid === uid);
+
+                try {
+                    if (existingDyn && existingDyn.fbId) {
+                        // It was already a dynamic product, update it
+                        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', existingDyn.fbId), prodData);
+                    } else {
+                        // It was a default product, create a dynamic OVERRIDE in the global database
+                        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'products'), prodData);
+                    }
+                } catch (e) {
+                    alert('Failed to save to cloud.');
+                    return;
+                }
             } else {
+                // Offline fallback
                 const dynIdx = dynamicProducts.findIndex(p => p.uid === uid);
                 if (dynIdx !== -1) {
-                    dynamicProducts[dynIdx] = { ...dynamicProducts[dynIdx], name, price, category: cat, image: img, description: desc };
-                    saveDynamic();
+                    dynamicProducts[dynIdx] = { ...dynamicProducts[dynIdx], ...prodData };
+                } else {
+                    dynamicProducts.push(prodData);
                 }
+                saveDynamic();
             }
 
             buildFilters();
@@ -1664,9 +1710,18 @@
             renderListedProducts();
         }
 
-        function toggleOOS(uid) {
+        async function toggleOOS(uid) {
             oosMap[uid] = !oosMap[uid];
             saveOOSMap();
+
+            // Push OOS State to global database
+            if (!isOfflineMode && window._fbHelpers) {
+                try {
+                    const { db, appId, doc, setDoc } = window._fbHelpers;
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'productStates'), { oosMap }, { merge: true });
+                } catch (e) { console.error('Failed to update OOS globally.'); }
+            }
+
             buildFilters();
             renderProducts();
             renderListedProducts();
@@ -1676,10 +1731,7 @@
             const ok = await customConfirm('Are you sure you want to permanently remove this product?');
             if (!ok) return;
 
-            if (isOfflineMode || !window._fbHelpers) {
-                dynamicProducts = dynamicProducts.filter(p => p.uid !== uid);
-                saveDynamic();
-            } else {
+            if (!isOfflineMode && window._fbHelpers) {
                 const prod = dynamicProducts.find(p => p.uid === uid);
                 if (prod && prod.fbId) {
                     try {
@@ -1690,10 +1742,10 @@
                         alert('Failed to delete from cloud.');
                         return;
                     }
-                } else {
-                    dynamicProducts = dynamicProducts.filter(p => p.uid !== uid);
-                    saveDynamic();
                 }
+            } else {
+                dynamicProducts = dynamicProducts.filter(p => p.uid !== uid);
+                saveDynamic();
             }
             buildFilters();
             renderProducts();
@@ -1702,67 +1754,70 @@
 
         // ---- CHANGE PASSWORD ----
         function clearPwdFields() {
-            ['pwdCurrent','pwdNew','pwdConfirm'].forEach(id => { document.getElementById(id).value = ''; });
+            ['pwdCurrent','pwdNew','pwdConfirm'].forEach(id => { 
+                const el = document.getElementById(id);
+                if(el) el.value = ''; 
+            });
             const msg = document.getElementById('pwdMsg');
-            msg.className = 'pwd-msg';
-            msg.textContent = '';
+            if(msg) {
+                msg.className = 'pwd-msg';
+                msg.textContent = '';
+            }
         }
 
-        // STEP 4 - Updated to async and writing to Firebase!
-        document.getElementById('changePwdBtn').addEventListener('click', async () => {
-            const cur = document.getElementById('pwdCurrent').value;
-            const nw = document.getElementById('pwdNew').value.trim();
-            const conf = document.getElementById('pwdConfirm').value.trim();
+        document.getElementById('changePwdBtn')?.addEventListener('click', async () => {
+            const cur = document.getElementById('pwdCurrent')?.value;
+            const nw = document.getElementById('pwdNew')?.value.trim();
+            const conf = document.getElementById('pwdConfirm')?.value.trim();
             const msg = document.getElementById('pwdMsg');
 
             if (cur !== ADMIN_PASS) {
-                msg.className = 'pwd-msg error';
-                msg.textContent = 'Current password is incorrect.';
+                if(msg){ msg.className = 'pwd-msg error'; msg.textContent = 'Current password is incorrect.'; }
                 return;
             }
             if (!nw) {
-                msg.className = 'pwd-msg error';
-                msg.textContent = 'New password cannot be empty.';
+                if(msg){ msg.className = 'pwd-msg error'; msg.textContent = 'New password cannot be empty.'; }
                 return;
             }
             if (nw !== conf) {
-                msg.className = 'pwd-msg error';
-                msg.textContent = 'New passwords do not match.';
+                if(msg){ msg.className = 'pwd-msg error'; msg.textContent = 'New passwords do not match.'; }
                 return;
             }
 
-            // Save to Local variables and storage
+            // Save locally
             ADMIN_PASS = nw;
             localStorage.setItem('shopify_admin_pass', nw);
 
-            // NEW: Save the password to the giant cloud whiteboard!
+            // Save globally!
             if (!isOfflineMode && window._fbHelpers) {
                 try {
                     const { db, appId, doc, setDoc } = window._fbHelpers;
                     const adminDocPath = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'adminSettings');
-                    
-                    // Write the new password to the cloud
                     await setDoc(adminDocPath, { password: nw }, { merge: true });
                 } catch (error) {
                     console.error("Couldn't save password to the cloud:", error);
                 }
             }
 
-            msg.className = 'pwd-msg success';
-            msg.textContent = '✓ Password updated successfully!';
-            document.getElementById('pwdNew').value = '';
-            document.getElementById('pwdConfirm').value = '';
-            document.getElementById('pwdCurrent').value = '';
+            if(msg){
+                msg.className = 'pwd-msg success';
+                msg.textContent = '✓ Password updated successfully!';
+            }
+            const pN = document.getElementById('pwdNew'); if(pN) pN.value = '';
+            const pC = document.getElementById('pwdConfirm'); if(pC) pC.value = '';
+            const pCur = document.getElementById('pwdCurrent'); if(pCur) pCur.value = '';
         });
 
         // ============================================================
         // ORDER FORM SUBMIT
         // ============================================================
-        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+        document.getElementById('orderForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.textContent = 'Placing order…';
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Placing order…';
+            }
 
             const formData = new FormData(this);
             const newOrder = {
@@ -1797,14 +1852,18 @@
                 updateCartUI();
                 renderProducts();
                 
-                document.getElementById('checkoutView').style.display = 'none';
-                document.getElementById('successView').style.display = 'block';
+                const cv = document.getElementById('checkoutView');
+                if (cv) cv.style.display = 'none';
+                const sv = document.getElementById('successView');
+                if (sv) sv.style.display = 'block';
             } catch(err) {
                 alert('Network error. Please try again or WhatsApp us directly.');
             }
             
-            btn.disabled = false;
-            btn.textContent = '✦ Confirm Order';
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = '✦ Confirm Order';
+            }
         });
 
         // ============================================================
@@ -1822,40 +1881,40 @@
         // ============================================================
         // EVENT WIRING (all via addEventListener — works in VS Code)
         // ============================================================
-        document.getElementById('ordersHeaderBtn').addEventListener('click', openOrders);
-        document.getElementById('cartHeaderBtn').addEventListener('click', openCart);
-        document.getElementById('closeCartBtn').addEventListener('click', closeCart);
-        document.getElementById('closeCheckoutBtn').addEventListener('click', closeCheckout);
-        document.getElementById('closeOrdersBtn').addEventListener('click', closeOrders);
-        document.getElementById('closeAdminBtn').addEventListener('click', closeAdmin);
-        document.getElementById('checkoutBtn').addEventListener('click', openCheckout);
-        document.getElementById('adminPortalLink').addEventListener('click', openAdmin);
+        document.getElementById('ordersHeaderBtn')?.addEventListener('click', openOrders);
+        document.getElementById('cartHeaderBtn')?.addEventListener('click', openCart);
+        document.getElementById('closeCartBtn')?.addEventListener('click', closeCart);
+        document.getElementById('closeCheckoutBtn')?.addEventListener('click', closeCheckout);
+        document.getElementById('closeOrdersBtn')?.addEventListener('click', closeOrders);
+        document.getElementById('closeAdminBtn')?.addEventListener('click', closeAdmin);
+        document.getElementById('checkoutBtn')?.addEventListener('click', openCheckout);
+        document.getElementById('adminPortalLink')?.addEventListener('click', openAdmin);
 
-        document.getElementById('drawerOverlay').addEventListener('click', closeCart);
-        document.getElementById('modalOverlay').addEventListener('click', e => {
+        document.getElementById('drawerOverlay')?.addEventListener('click', closeCart);
+        document.getElementById('modalOverlay')?.addEventListener('click', e => {
             if (e.target === document.getElementById('modalOverlay')) closeCheckout();
         });
-        document.getElementById('ordersModalOverlay').addEventListener('click', e => {
+        document.getElementById('ordersModalOverlay')?.addEventListener('click', e => {
             if (e.target === document.getElementById('ordersModalOverlay')) closeOrders();
         });
-        document.getElementById('adminModalOverlay').addEventListener('click', e => {
+        document.getElementById('adminModalOverlay')?.addEventListener('click', e => {
             if (e.target === document.getElementById('adminModalOverlay')) closeAdmin();
         });
 
-        document.getElementById('confirmYesBtn').addEventListener('click', () => {
-            document.getElementById('confirmModalOverlay').classList.remove('open');
+        document.getElementById('confirmYesBtn')?.addEventListener('click', () => {
+            document.getElementById('confirmModalOverlay')?.classList.remove('open');
             if (resolveConfirm) resolveConfirm(true);
         });
-        document.getElementById('confirmNoBtn').addEventListener('click', () => {
-            document.getElementById('confirmModalOverlay').classList.remove('open');
+        document.getElementById('confirmNoBtn')?.addEventListener('click', () => {
+            document.getElementById('confirmModalOverlay')?.classList.remove('open');
             if (resolveConfirm) resolveConfirm(false);
         });
 
         // Admin tab buttons
-        document.getElementById('tabBtnOrders').addEventListener('click', () => switchAdminTab('orders'));
-        document.getElementById('tabBtnAddProduct').addEventListener('click', () => switchAdminTab('addProduct'));
-        document.getElementById('tabBtnListedProducts').addEventListener('click', () => switchAdminTab('listedProducts'));
-        document.getElementById('tabBtnPassword').addEventListener('click', () => switchAdminTab('password'));
+        document.getElementById('tabBtnOrders')?.addEventListener('click', () => switchAdminTab('orders'));
+        document.getElementById('tabBtnAddProduct')?.addEventListener('click', () => switchAdminTab('addProduct'));
+        document.getElementById('tabBtnListedProducts')?.addEventListener('click', () => switchAdminTab('listedProducts'));
+        document.getElementById('tabBtnPassword')?.addEventListener('click', () => switchAdminTab('password'));
 
         // ============================================================
         // INIT
